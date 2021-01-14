@@ -33,6 +33,13 @@ use Http\Client\HttpClient;
 final class Nominatim extends AbstractHttpProvider implements Provider
 {
     /**
+     * The parameters that are accepted for a "structured query".
+     *
+     * @var array
+     */
+    const STRUCTURED_QUERY_PARAMETERS = ['street', 'city', 'county', 'state', 'country', 'postalcode'];
+
+    /**
      * @var string
      */
     private $rootUrl;
@@ -94,10 +101,18 @@ final class Nominatim extends AbstractHttpProvider implements Provider
             .'/search?'
             .http_build_query([
                 'format' => 'jsonv2',
-                'q' => $address,
                 'addressdetails' => 1,
                 'limit' => $query->getLimit(),
             ]);
+
+        $type = $query->getData('type');
+        if ($type && in_array($type, self::STRUCTURED_QUERY_PARAMETERS)) {
+            $url .= '&'.http_build_query([$type => $address]);
+        } else {
+            $url .= '&'.http_build_query([
+                'q' => $address,
+            ]);
+        }
 
         $countrycodes = $query->getData('countrycodes');
         if (!is_null($countrycodes)) {
