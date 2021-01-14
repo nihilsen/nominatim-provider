@@ -143,6 +143,13 @@ final class Nominatim extends AbstractHttpProvider implements Provider
             }
         }
 
+        $polygonGeoJson = $query->getData('polygon_geojson', false);
+        if ($polygonGeoJson) {
+            $url .= '&'.http_build_query([
+                'polygon_geojson' => 1,
+            ]);
+        }
+
         $content = $this->executeQuery($url, $query->getLocale());
 
         $json = json_decode($content);
@@ -257,6 +264,10 @@ final class Nominatim extends AbstractHttpProvider implements Provider
         }
         if (isset($place->osm_type)) {
             $location = $location->withOSMType($place->osm_type);
+        }
+
+        if (isset($place->geojson)) {
+            $location = $location->withGeoJson(json_encode($place->geojson));
         }
 
         if (false === $reverse) {
