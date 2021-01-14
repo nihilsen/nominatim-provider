@@ -52,6 +52,11 @@ final class NominatimAddress extends Address
     /**
      * @var string|null
      */
+    private $geoJson;
+
+    /**
+     * @var string|null
+     */
     private $type;
 
     /**
@@ -177,6 +182,27 @@ final class NominatimAddress extends Address
     {
         $new = clone $this;
         $new->osmType = $osmType;
+
+        return $new;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getGeoJson(): ?string
+    {
+        return $this->geoJson;
+    }
+
+    /**
+     * @param string|null $geoJson
+     *
+     * @return NominatimAddress
+     */
+    public function withGeoJson(string $geoJson = null): self
+    {
+        $new = clone $this;
+        $new->geoJson = $geoJson;
 
         return $new;
     }
